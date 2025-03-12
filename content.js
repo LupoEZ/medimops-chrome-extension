@@ -24,8 +24,9 @@ async function processNoticeList() {
 
         const { originalPrice, discount } = productData;
 
+        //TODO: doesn't work correct - should show when no discount data present but doesn't get triggered yet
         if (discount === "N/A") {
-            console.warn(`No discount data found for: ${productUrl}`);
+            console.log(`No discount data found for: ${productUrl}`);
         }
 
         // Create and insert the price & discount display
@@ -41,7 +42,7 @@ async function processNoticeList() {
     console.log("...Wishlist processing ended");
 }
 
-
+//fetch product price 'original' (means price for 'New') and discount with best condition (like the one presented by the notice-list)
 async function getProductData(url) {
     try {
         const response = await fetch(url);
@@ -72,4 +73,26 @@ async function getProductData(url) {
     }
 }
 
+// Event listener for pagination
+function setupPaginationListener() {
+    const paginationContainer = document.querySelector(".pagination");
+    if (!paginationContainer) return;
+
+    paginationContainer.addEventListener("click", (event) => {
+        // Check if a pagination button was clicked
+        if (event.target.classList.contains("pagination__item")) {
+            console.log("Pagination button clicked. Waiting for new items to load...");
+
+            // Wait a short moment before reprocessing the wishlist (to ensure new content is loaded)
+            setTimeout(() => {
+                console.log("Reprocessing wishlist after pagination change...");
+                processWishlist();
+            }, 1000); // Delay to allow page update
+        }
+    });
+}
+
+
+
 processNoticeList();
+setupPaginationListener();
