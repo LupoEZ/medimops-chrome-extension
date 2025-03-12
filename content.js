@@ -6,6 +6,7 @@ function setupPaginationListener() {
     // Ensure the listener is added after reloading but only once
     paginationContainer.removeEventListener("click", handlePaginationClick);
     paginationContainer.addEventListener("click", handlePaginationClick);
+    console.log("Pagination listener added");
 }
 
 // Function that is called when a pagination button is clicked
