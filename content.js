@@ -115,4 +115,3 @@ async function getProductData(url) {
 processNoticeList();
 //TODO: Handle Books without discount (new books or not available ones)
 //TODO: Handle Books without an original price (without "new" category most likely)
-//TODO: Change discount element (shifts existing elements)
