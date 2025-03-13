@@ -59,17 +59,18 @@ async function processNoticeList() {
         infoElement.style.fontWeight = "bold";
         infoElement.style.marginTop = "10px";
         infoElement.style.display = "inline-block";
+        infoElement.style.textAlign = "right";
         infoElement.textContent = `Original-Preis: ${originalPrice} (${discount} günstiger)`;
 
         // Get the parent container for pricing
         const pricingContainer = priceElement.closest(".notice-list-product__pricing");
 
-        // Apply flexbox to ensure side-by-side alignment
-        pricingContainer.style.display = "flex";
-        pricingContainer.style.alignItems = "center";
+        // Add the infoElement to the grid in the new "info" column
+        item.style.gridTemplateColumns = "90px auto auto 200px"; // Update grid layout
+        item.style.gridTemplateAreas = '"image description info pricing" "image buttons buttons buttons" "line line line line"'; // Define areas
 
         // Insert the info element at the beginning of the pricing container
-        pricingContainer.insertBefore(infoElement, pricingContainer.firstChild);
+        pricingContainer.parentNode.insertBefore(infoElement, pricingContainer);
     }
 
     console.log("...Wishlist processing ended");
