@@ -49,7 +49,6 @@ async function processNoticeList() {
 
         const { originalPrice, discount } = productData;
 
-        //TODO: doesn't work correct - should show when no discount data present but doesn't get triggered yet
         if (discount === "N/A") {
             console.log(`No discount data found for: ${productUrl}`);
         }
@@ -58,10 +57,19 @@ async function processNoticeList() {
         const infoElement = document.createElement("div");
         infoElement.style.color = "red";
         infoElement.style.fontWeight = "bold";
-        infoElement.style.marginTop = "5px";
-        infoElement.textContent = `Original: ${originalPrice} (${discount} off)`;
+        infoElement.style.marginTop = "10px";
+        infoElement.style.display = "inline-block";
+        infoElement.textContent = `Original-Preis: ${originalPrice} (${discount} günstiger)`;
 
-        priceElement.parentNode.appendChild(infoElement);
+        // Get the parent container for pricing
+        const pricingContainer = priceElement.closest(".notice-list-product__pricing");
+
+        // Apply flexbox to ensure side-by-side alignment
+        pricingContainer.style.display = "flex";
+        pricingContainer.style.alignItems = "center";
+
+        // Insert the info element at the beginning of the pricing container
+        pricingContainer.insertBefore(infoElement, pricingContainer.firstChild);
     }
 
     console.log("...Wishlist processing ended");
@@ -104,3 +112,6 @@ async function getProductData(url) {
 
 
 processNoticeList();
+//TODO: Handle Books without discount (new books or not available ones)
+//TODO: Handle Books without an original price (without "new" category most likely)
+//TODO: Change discount element (shifts existing elements)
