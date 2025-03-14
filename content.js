@@ -23,6 +23,15 @@ function handlePaginationClick(event) {
     }
 }
 
+// Define a map for conditions and their corresponding colors
+const conditionColors = new Map([
+    ["Neu", "#28a745"],
+    ["Gebraucht - Wie neu", "#7cc576"],
+    ["Gebraucht - Sehr gut", "#007bff"],
+    ["Gebraucht - Gut", "#ff9800"],
+    ["Gebraucht - Akzeptabel", "#823303"]
+]);
+
 //go through all notice-list items
 async function processNoticeList() {
     console.log("Wishlist processing begins...");
@@ -41,17 +50,20 @@ async function processNoticeList() {
         const priceElement = item.querySelector(".notice-list-product__price");
         if (!priceElement) continue;
 
-        console.log(`Fetching data for: ${productUrl}`);
+        //Get condition of the book
+        const conditionElement = item.querySelector(".notice-list-product__condition");
+        if (conditionElement) {
+            const condition = conditionElement.textContent.trim();
+            conditionElement.style.color = conditionColors.get(condition) || "black";
+        }
 
         // Fetch original price and discount from the product page
         const productData = await getProductData(productUrl);
         if (!productData) continue;
 
-        const { originalPrice, discount } = productData;
+        console.log(`Fetching data for: ${productUrl}`);
 
-        if (discount === "N/A") {
-            console.log(`No discount data found for: ${productUrl}`);
-        }
+        const { originalPrice, discount } = productData;
 
         // Create and insert the price & discount display
         const infoElement = document.createElement("div");
@@ -115,3 +127,5 @@ async function getProductData(url) {
 processNoticeList();
 //TODO: Handle Books without discount (new books or not available ones)
 //TODO: Handle Books without an original price (without "new" category most likely)
+//TODO: Extension Button to manually deactivate and activate the Extension
+//TODO: Logo for the Extension
