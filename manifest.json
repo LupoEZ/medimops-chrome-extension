@@ -1,9 +1,9 @@
 {
   "manifest_version": 3,
   "name": "Medimops Wishlist Extension",
-  "version": "0.2",
-  "description": "Shows discount percentages on your medimops wishlist.",
-  "permissions": ["scripting"],
+  "version": "0.3",
+  "description": "Discount Extensions for Notice List",
+  "permissions": ["scripting", "storage", "notifications", "alarms"],
   "host_permissions": ["https://www.medimops.de/*"],
   "background": {
     "service_worker": "background.js"
@@ -13,5 +13,13 @@
       "matches": ["https://www.medimops.de/*"],
       "js": ["content.js"]
     }
-  ]
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "images/icon16.png",
+      "48": "images/icon48.png",
+      "128": "images/icon128.png"
+    }
+  }
 }

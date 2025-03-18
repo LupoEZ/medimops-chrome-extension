@@ -125,7 +125,5 @@ async function getProductData(url) {
 
 
 processNoticeList();
-//TODO: Handle Books without discount (new books or not available ones)
-//TODO: Handle Books without an original price (without "new" category most likely)
 //TODO: Extension Button to manually deactivate and activate the Extension
 //TODO: Logo for the Extension
