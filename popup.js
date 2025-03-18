@@ -79,17 +79,17 @@ function loadWishlistItems() {
 
       const discountElement = document.createElement('div');
       discountElement.className = 'discount';
-      discountElement.textContent = `Discount: ${item.discount}%`;
+      discountElement.textContent = `Rabatt: ${item.discount}%`;
 
       const priceElement = document.createElement('div');
-      priceElement.textContent = `Price: ${item.price}`;
+      priceElement.textContent = `Preis: ${item.price}`;
 
       const conditionElement = document.createElement('div');
-      conditionElement.textContent = `Condition: ${item.condition}`;
+      conditionElement.textContent = `Zustand: ${item.condition}`;
 
       const linkElement = document.createElement('a');
       linkElement.href = item.link;
-      linkElement.textContent = 'View on Medimops';
+      linkElement.textContent = 'Link zur Medimops-Seite';
       linkElement.target = '_blank';
 
       // Add click handler to open the link
