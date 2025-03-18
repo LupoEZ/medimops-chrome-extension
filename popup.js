@@ -94,7 +94,10 @@ function loadWishlistItems() {
 
       // Add click handler to open the link
       linkElement.addEventListener('click', (e) => {
-        chrome.tabs.create({ url: item.link });
+        chrome.tabs.create({
+          url: item.link,
+          active: false  // This opens the tab in the background
+        });
         e.preventDefault();
       });
 

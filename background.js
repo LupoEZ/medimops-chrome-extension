@@ -1,3 +1,26 @@
+// Listen for extension installation or update
+chrome.runtime.onInstalled.addListener(() => {
+    console.log("Extension installed or updated");
+    fetchAllNoticelistData();
+
+    // Set up alarm for periodic checking
+    chrome.alarms.create("checkWishlist", { periodInMinutes: 60 });
+});
+
+// Listen for browser startup
+chrome.runtime.onStartup.addListener(() => {
+    console.log("Browser started");
+    fetchAllNoticelistData();
+});
+
+// Listen for alarm
+chrome.alarms.onAlarm.addListener((alarm) => {
+    if (alarm.name === "checkWishlist") {
+        console.log("Checking wishlist for updates");
+        fetchAllNoticelistData();
+    }
+});
+
 async function fetchAllNoticelistData() {
     try {
         // Step 1: Fetch first page to determine pagination
@@ -88,7 +111,5 @@ async function fetchPageData(url) {
 
 // Call the function when the background script is loaded
 fetchAllNoticelistData();
-
-//TODO: Use chrome.alarms to check prices at intervals
-//TODO: Send a chrome.notifications alert if a discount is found
+//TODO: Send a chrome.notifications alert if a new discount is found
 
