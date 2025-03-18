@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Medimops Discount Finder</title>
+  <style>
+    body {
+      width: 300px;
+      max-height: 500px;
+      font-family: Arial, sans-serif;
+      padding: 10px;
+    }
+    .item {
+      border-bottom: 1px solid #eee;
+      padding: 8px 0;
+    }
+    .discount {
+      color: red;
+      font-weight: bold;
+    }
+    .title {
+      font-weight: bold;
+    }
+    .settings {
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #ccc;
+    }
+    .filter-row {
+      margin-bottom: 8px;
+    }
+    select {
+      padding: 2px;
+      min-width: 120px;
+    }
+  </style>
+</head>
+<body>
+  <div class="settings">
+    <div class="filter-row">
+      <label>Minimum discount:
+        <input type="number" id="threshold" min="0" max="100" value="50">%
+      </label>
+    </div>
+    <div class="filter-row">
+      <label>Book condition:
+        <select id="conditionFilter">
+          <option value="all">All conditions</option>
+          <option value="Neu">Neu</option>
+          <option value="Gebraucht - Wie neu">Wie neu</option>
+          <option value="Gebraucht - Sehr gut">Sehr gut</option>
+          <option value="Gebraucht - Gut">Gut</option>
+          <option value="Gebraucht - Akzeptabel">Akzeptabel</option>
+        </select>
+      </label>
+    </div>
+    <button id="applyFilters">Apply Filters</button>
+    <div id="items-container">
+      Loading your wishlist items...
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

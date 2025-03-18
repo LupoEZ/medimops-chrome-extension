@@ -1,4 +1,3 @@
-//TODO: Store and retrieve wishlist items using chrome.storage
 async function fetchAllNoticelistData() {
     try {
         // Step 1: Fetch first page to determine pagination
@@ -89,15 +88,6 @@ async function fetchPageData(url) {
 
 // Call the function when the background script is loaded
 fetchAllNoticelistData();
-
-
-
-
-
-
-
-
-
 
 //TODO: Use chrome.alarms to check prices at intervals
 //TODO: Send a chrome.notifications alert if a discount is found
