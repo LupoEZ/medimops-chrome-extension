@@ -1,2 +1,5 @@
 # medimops-chrome-extension
-A chrome extension to show the original prices and percentage discounts on Medimops (german second hand book shop)
+A chrome extension for medimops
+Features at the moment:
+- show discounts on notice list page
+- popup menu to filter notice list products (discount and condition)
