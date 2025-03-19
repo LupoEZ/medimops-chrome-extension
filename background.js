@@ -21,6 +21,11 @@ chrome.alarms.onAlarm.addListener((alarm) => {
     }
 });
 
+// Listen for notification click
+chrome.notifications.onClicked.addListener((notificationId) => {
+    chrome.action.openPopup(); // Open the popup when notification is clicked
+});
+
 async function fetchAllNoticelistData() {
     try {
         // Step 1: Fetch first page to determine pagination
@@ -55,6 +60,13 @@ async function fetchAllNoticelistData() {
         console.log(`Total products collected: ${Object.keys(allProducts).length}`);
         console.log("All products:", allProducts);
 
+        // Get previously stored data for comparison
+        const { wishlistData: previousData } = await chrome.storage.local.get('wishlistData');
+
+        // Get user preferences for notifications
+        const { discountThreshold = 50, conditionFilter = 'all' } =
+            await chrome.storage.local.get(['discountThreshold', 'conditionFilter']);
+
         // Process and store all wishlist data
         const wishlistData = Object.values(allProducts).map(product => {
             // Handle cases where product might not have variants
@@ -70,6 +82,14 @@ async function fetchAllNoticelistData() {
                 discount: hasVariants ? product.variants[0].listPriceDiscountPercent : null
             };
         });
+
+        // Find items with significant discount changes
+        const notifyItems = findSignificantDiscountChanges(previousData, wishlistData, discountThreshold, conditionFilter);
+
+        // Send notifications if needed
+        if (notifyItems.length > 0) {
+            sendNotifications(notifyItems);
+        }
 
         // Store the data using chrome.storage
         chrome.storage.local.set({ wishlistData }, () => {
@@ -109,7 +129,69 @@ async function fetchPageData(url) {
     return jsonData.props.pageProps.initialProps.originalServerResponse.data;
 }
 
-// Call the function when the background script is loaded
-fetchAllNoticelistData();
-//TODO: Send a chrome.notifications alert if a new discount is found
+function findSignificantDiscountChanges(oldData, newData, discountThreshold, conditionFilter) {
+    if (!oldData) return []; // No previous data to compare
 
+    const notifyItems = [];
+    const oldItemMap = new Map(oldData.map(item => [item.id, item]));
+
+    for (const newItem of newData) {
+        const oldItem = oldItemMap.get(newItem.id);
+
+        // Skip if item doesn't meet filter conditions
+        if (conditionFilter !== 'all' && newItem.condition !== conditionFilter) {
+            continue;
+        }
+
+        // Conditions for notification:
+        // 1. The item exists in both old and new data
+        // 2. The new discount meets or exceeds threshold
+        // 3. The discount has increased from below threshold to above threshold
+        if (oldItem &&
+            newItem.discount && parseInt(newItem.discount, 10) >= discountThreshold &&
+            (!oldItem.discount || parseInt(oldItem.discount, 10) < discountThreshold)) {
+
+            notifyItems.push({
+                ...newItem,
+                oldDiscount: oldItem.discount || '0'
+            });
+        }
+    }
+
+    return notifyItems;
+}
+
+function sendNotifications(items) {
+    if (items.length === 0) return;
+
+    // For a single item
+    if (items.length === 1) {
+        const item = items[0];
+        chrome.notifications.create({
+            type: 'basic',
+            iconUrl: 'images/icon48.png', // Update path to match your manifest
+            title: 'Neuer Rabatt!',
+            message: `"${item.title}" ist jetzt mit ${item.discount}% Rabatt verfügbar! (vorher: ${item.oldDiscount}%)`,
+            priority: 2
+        });
+        return;
+    }
+
+    // For multiple items (up to 3 titles shown explicitly)
+    const itemTitles = items.map(item => `"${item.title}" (${item.discount}%)`);
+    let message = '';
+
+    message = "Neue Rabbate verfügbar für:\n" + itemTitles.join('\n');
+
+    chrome.notifications.create({
+        type: 'basic',
+        iconUrl: 'images/icon48.png', // Update path to match your manifest
+        title: 'Neue Rabatte!',
+        message: message,
+        priority: 2
+    });
+}
+
+
+// // Call the function when the background script is loaded
+// // fetchAllNoticelistData();
