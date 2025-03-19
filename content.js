@@ -32,7 +32,37 @@ const conditionColors = new Map([
     ["Gebraucht - Akzeptabel", "#823303"]
 ]);
 
-//go through all notice-list items
+// Replace getProductData with this function that uses stored data
+async function getProductDataFromStorage(productId) {
+    try {
+        // Get stored wishlist data
+        const { wishlistData } = await chrome.storage.local.get('wishlistData');
+
+        if (!wishlistData) {
+            console.log("No wishlist data found in storage");
+            return null;
+        }
+
+        // Find the product with matching ID
+        const product = wishlistData.find(item => item.id === productId);
+
+        if (!product) {
+            console.log(`Product with ID ${productId} not found in storage`);
+            return null;
+        }
+
+        // Calculate discount info
+        const originalPrice = product.price ? (product.price / (1 - (parseInt(product.discount) / 100))).toFixed(2) + " €" : "N/A";
+        const discount = product.discount ? product.discount + "%" : "N/A";
+
+        return { originalPrice, discount };
+    } catch (error) {
+        console.error("Error getting product data from storage:", error);
+        return null;
+    }
+}
+
+// Updated processNoticeList function
 async function processNoticeList() {
     console.log("Wishlist processing begins...");
 
@@ -44,24 +74,30 @@ async function processNoticeList() {
         const linkElement = item.querySelector(".notice-list-product__image a");
         if (!linkElement) continue;
 
-        const productUrl = "https://www.medimops.de" + linkElement.getAttribute("href");
+        const productUrl = linkElement.getAttribute("href");
 
-        // Get current price element (= price best second hand condition or "new")
+        // Extract product ID from URL
+        const productIdMatch = productUrl.match(/M0(\d+)\.html$/);
+        if (!productIdMatch) continue;
+
+        const productId = "M0" + productIdMatch[1];
+
+        // Get current price element
         const priceElement = item.querySelector(".notice-list-product__price");
         if (!priceElement) continue;
 
-        //Get condition of the book
+        // Get condition of the book
         const conditionElement = item.querySelector(".notice-list-product__condition");
         if (conditionElement) {
             const condition = conditionElement.textContent.trim();
             conditionElement.style.color = conditionColors.get(condition) || "black";
         }
 
-        // Fetch original price and discount from the product page
-        const productData = await getProductData(productUrl);
+        // Get product data from storage
+        const productData = await getProductDataFromStorage(productId);
         if (!productData) continue;
 
-        console.log(`Fetching data for: ${productUrl}`);
+        console.log(`Found data for: ${productId}`);
 
         const { originalPrice, discount } = productData;
 
@@ -90,7 +126,7 @@ async function processNoticeList() {
     setupPaginationListener();
 }
 
-//fetch product price 'original' (means price for 'New') and discount with best condition (like the one presented by the notice-list)
+//Fallback function to fetch the original price and discount directly from the product page
 async function getProductData(url) {
     try {
         const response = await fetch(url);
@@ -122,8 +158,5 @@ async function getProductData(url) {
 }
 
 
-
-
 processNoticeList();
 //TODO: Extension Button to manually deactivate and activate the Extension
-//TODO: Logo for the Extension
