@@ -52,10 +52,11 @@ async function getProductDataFromStorage(productId) {
         }
 
         // Calculate discount info
-        const originalPrice = product.price ? (product.price / (1 - (parseInt(product.discount) / 100))).toFixed(2) + " €" : "N/A";
+        const originalPrice = product.price ? product.listPrice + " €" : "N/A";
         const discount = product.discount ? product.discount + "%" : "N/A";
+        const title = product.title ? product.title : "N/A";
 
-        return { originalPrice, discount };
+        return { originalPrice, discount, title };
     } catch (error) {
         console.error("Error getting product data from storage:", error);
         return null;
@@ -72,19 +73,28 @@ async function processNoticeList() {
     for (const item of items) {
         // Get product URL
         const linkElement = item.querySelector(".notice-list-product__image a");
-        if (!linkElement) continue;
+        if (!linkElement) {
+            console.log("Item skipped: No link element found");
+            continue;
+        }
 
         const productUrl = linkElement.getAttribute("href");
 
         // Extract product ID from URL
-        const productIdMatch = productUrl.match(/M0(\d+)\.html$/);
-        if (!productIdMatch) continue;
+        const productIdMatch = productUrl.match(/M0([0-9A-Za-z]+)\.html$/); //matches ID's with digits and letters
+        if (!productIdMatch) {
+            console.log("Item skipped: No product ID matched");
+            continue;
+        }
 
         const productId = "M0" + productIdMatch[1];
 
         // Get current price element
         const priceElement = item.querySelector(".notice-list-product__price");
-        if (!priceElement) continue;
+        if (!priceElement) {
+            console.log("Item skipped: No price element found");
+            continue;
+        }
 
         // Get condition of the book
         const conditionElement = item.querySelector(".notice-list-product__condition");
@@ -92,14 +102,24 @@ async function processNoticeList() {
             const condition = conditionElement.textContent.trim();
             conditionElement.style.color = conditionColors.get(condition) || "black";
         }
+        if (conditionElement.textContent.trim() === "Neu") {
+            console.log("Item skipped: Condition is 'Neu'");
+            continue;
+        }
+
+
 
         // Get product data from storage
         const productData = await getProductDataFromStorage(productId);
         if (!productData) continue;
+        const { originalPrice, discount, title } = productData;
 
-        console.log(`Found data for: ${productId}`);
+        if (originalPrice === "null €") {
+            console.log("Item skipped: No original price found");
+            continue
+        }
 
-        const { originalPrice, discount } = productData;
+        console.log(`Item-Data processed for: ${productId} (${title})`);
 
         // Create and insert the price & discount display
         const infoElement = document.createElement("div");

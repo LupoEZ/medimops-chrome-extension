@@ -71,15 +71,17 @@ async function fetchAllNoticelistData() {
         const wishlistData = Object.values(allProducts).map(product => {
             // Handle cases where product might not have variants
             const hasVariants = product.variants && product.variants.length > 0;
+            const firstVariant = product.variants[0];
 
             return {
                 id: product.id,
                 title: product.title,
                 link: product.link,
                 available: hasVariants,
-                price: hasVariants ? product.variants[0].price : null,
-                condition: hasVariants ? product.variants[0].condition : null,
-                discount: hasVariants ? product.variants[0].listPriceDiscountPercent : null
+                listPrice: product.listPrice,
+                price: hasVariants ? firstVariant.price : null,
+                condition: hasVariants ? firstVariant.condition : null,
+                discount: hasVariants ? firstVariant.listPriceDiscountPercent : null
             };
         });
 
