@@ -6,7 +6,7 @@ function setupPaginationListener() {
     // Ensure the listener is added after reloading but only once
     paginationContainer.removeEventListener("click", handlePaginationClick);
     paginationContainer.addEventListener("click", handlePaginationClick);
-    console.log("Pagination listener added");
+    console.log("New Pagination listener added");
 }
 
 // Function that is called when a pagination button is clicked
@@ -35,7 +35,7 @@ const conditionColors = new Map([
 // Replace getProductData with this function that uses stored data
 async function getProductDataFromStorage(productId) {
     try {
-        // Get stored wishlist data
+        // Get stored notice list data
         const { wishlistData } = await chrome.storage.local.get('wishlistData');
 
         if (!wishlistData) {
@@ -65,6 +65,8 @@ async function getProductDataFromStorage(productId) {
 
 // Updated processNoticeList function
 async function processNoticeList() {
+    setupPaginationListener();
+
     console.log("Wishlist processing begins...");
 
     // Select all notice-list items
@@ -142,8 +144,6 @@ async function processNoticeList() {
     }
 
     console.log("...Wishlist processing ended");
-
-    setupPaginationListener();
 }
 
 //Fallback function to fetch the original price and discount directly from the product page
@@ -179,4 +179,3 @@ async function getProductData(url) {
 
 
 processNoticeList();
-//TODO: Extension Button to manually deactivate and activate the Extension

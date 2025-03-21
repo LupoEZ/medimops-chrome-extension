@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Medimops Wishlist Extension",
-  "version": "0.3",
-  "description": "Discount Extensions for Notice List",
+  "name": "Medimops Notice-List Extension",
+  "version": "0.4",
+  "description": "Improved NoticeList, notifications and external overview",
   "permissions": ["scripting", "storage", "notifications", "alarms"],
   "host_permissions": ["https://www.medimops.de/*"],
   "background": {
