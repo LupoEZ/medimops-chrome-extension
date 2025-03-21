@@ -193,7 +193,3 @@ function sendNotifications(items) {
         priority: 2
     });
 }
-
-
-// // Call the function when the background script is loaded
-// // fetchAllNoticelistData();
